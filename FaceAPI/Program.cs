@@ -194,14 +194,19 @@ namespace FaceAPI
         {
             Console.WriteLine("\n Create Large Face List Pipeline");
 
-            string listName = "name-facelist";
+            Console.WriteLine("\n Enter Large Face List name:");
+            string listName = Console.ReadLine();
+            if (listName == "")
+            {
+                listName = "name-facelist";
+            }
+
             Guid listID = Guid.NewGuid();
 
             try
             {
                 await FaceAPIHelpers.CreateFaceList(listID.ToString(), listName);
-
-                Console.WriteLine("\n Large Face list created.");
+                Console.WriteLine($"\n Large Face list created.");
             }
             catch (Exception e)
             {

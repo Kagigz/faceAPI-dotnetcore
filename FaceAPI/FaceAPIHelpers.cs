@@ -301,6 +301,10 @@ namespace FaceAPI
                 {
                     results = JsonConvert.DeserializeObject<List<LargeFaceList>>(response);
                     Console.WriteLine($"\n{results.Count} Large Face Lists found.");
+                    foreach(LargeFaceList l in results)
+                    {
+                        Console.WriteLine($"\nID: {l.largeFaceListId} Name: {l.name}");
+                    }
                 }
                 catch (Exception e)
                 {
@@ -333,6 +337,7 @@ namespace FaceAPI
                 }));
 
                 Console.WriteLine($"\n New Large Face List '{newFaceListName}' created.");
+                Console.WriteLine($"\n New Large Face List ID: {newFaceListID}");
             }
             catch (Exception e)
             {
