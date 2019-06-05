@@ -124,6 +124,7 @@ namespace FaceAPI
         public string faceId;
         public Rectangle faceRectangle;
         public FaceAttributes faceAttributes = null;
+        public List<string> tags = new List<string>();
     }
 
     public class PersistedFace
@@ -199,8 +200,17 @@ namespace FaceAPI
 
                     if (detectAttributes)
                     {
-                        Console.WriteLine("\n Face Attributes");
-                        Console.Write($"\n Age: {results[0].faceAttributes.age} Gender: {results[0].faceAttributes.gender}");
+                        foreach (Face f in results)
+                        {
+                            CreateTags(f);
+                            Console.Write("\nTags created:\n");
+                            foreach(string tag in f.tags)
+                            {
+                                Console.Write($"{tag} ");
+                            }
+                            
+                        }
+               
                     }
 
                 }
@@ -509,6 +519,160 @@ namespace FaceAPI
             }
 
             return results;
+
+        }
+
+        private static void CreateTags(Face face)
+        {
+            // Age tag
+            double age = face.faceAttributes.age;
+            string ageTag = "adult";
+            if (age < 2)
+            {
+                ageTag = "baby";
+            }
+            if (age < 5)
+            {
+                ageTag = "toddler";
+            }
+            else if (age < 13)
+            {
+                ageTag = "child";
+            }
+            else if (age < 19)
+            {
+                ageTag = "teenager";
+            }
+            else if (age < 26)
+            {
+                ageTag = "young adult";
+            }
+            else if (age > 65)
+            {
+                ageTag = "elderly";
+            }
+            face.tags.Add(ageTag);
+
+            // Smile tag
+            float thresholdSmile = 0.5f;
+            if(face.faceAttributes.smile > thresholdSmile)
+            {
+                face.tags.Add("smiling");
+            }
+
+            // Gender tag
+            if(face.faceAttributes.gender == "female")
+            {
+                if (age < 18)
+                {
+                    face.tags.Add("girl");
+                }
+                else
+                {
+                    face.tags.Add("woman");
+                }
+            }
+            else if (face.faceAttributes.gender == "male")
+            {
+                if (age < 18)
+                {
+                    face.tags.Add("boy");
+                }
+                else
+                {
+                    face.tags.Add("man");
+                }
+            }
+
+            // Facial hair tag
+            float thresholdFacialHair = 0.5f;
+            if (face.faceAttributes.facialHair.moustache > thresholdFacialHair)
+            {
+                face.tags.Add("moustache");
+            }
+            if (face.faceAttributes.facialHair.beard > thresholdFacialHair)
+            {
+                face.tags.Add("beard");
+            }
+            if (face.faceAttributes.facialHair.sideburns > thresholdFacialHair)
+            {
+                face.tags.Add("sideburns");
+            }
+
+            // Glasses tag
+            if (face.faceAttributes.glasses != "NoGlasses")
+            {
+                face.tags.Add(face.faceAttributes.glasses);
+            }
+
+            // Makeup tag
+            if (face.faceAttributes.makeup.eyeMakeup)
+            {
+                face.tags.Add("eye makeup");
+            }
+            if (face.faceAttributes.makeup.lipMakeup)
+            {
+                face.tags.Add("lip makeup");
+            }
+
+            // Emotion tag
+            float thresholdEmotion = 0.6f;
+            if (face.faceAttributes.emotion.anger > thresholdEmotion)
+            {
+                face.tags.Add("angry");
+            }
+            if (face.faceAttributes.emotion.contempt > thresholdEmotion)
+            {
+                face.tags.Add("arrogant");
+            }
+            if (face.faceAttributes.emotion.disgust > thresholdEmotion)
+            {
+                face.tags.Add("disgusted");
+            }
+            if (face.faceAttributes.emotion.fear > thresholdEmotion)
+            {
+                face.tags.Add("scared");
+            }
+            if (face.faceAttributes.emotion.happiness > thresholdEmotion)
+            {
+                face.tags.Add("happy");
+            }
+            if (face.faceAttributes.emotion.neutral > thresholdEmotion)
+            {
+                face.tags.Add("neutral");
+            }
+            if (face.faceAttributes.emotion.sadness > thresholdEmotion)
+            {
+                face.tags.Add("sad");
+            }
+            if (face.faceAttributes.emotion.surprise > thresholdEmotion)
+            {
+                face.tags.Add("surprised");
+            }
+
+            // Accessories tag
+            float thresholdAccessory = 0.5f;
+            foreach(Accessory a in face.faceAttributes.accessories)
+            {
+                if (a.confidence > thresholdAccessory)
+                {
+                    face.tags.Add(a.type);
+                }
+            }
+
+            // Hair tag
+            float thresholdHair = 0.6f;
+            if (face.faceAttributes.hair.bald > thresholdHair)
+            {
+                face.tags.Add("bald");
+            }
+            foreach(HairColor h in face.faceAttributes.hair.hairColor)
+            {
+                if (h.confidence > thresholdHair)
+                {
+                    face.tags.Add($"{h.color} hair");
+                }
+            }
 
         }
 
